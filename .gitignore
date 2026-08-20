@@ -41,6 +41,5 @@ yarn-error.log*
 next-env.d.ts
 
 # Database
-/src/data/content.json
-/src/data/versions/
+
 /requirements
