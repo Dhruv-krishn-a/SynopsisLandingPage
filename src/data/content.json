@@ -113,12 +113,6 @@
     ]
   },
   "hero": {
-    "button1": {
-      "value": "Get Synopsis Guidance"
-    },
-    "button2": {
-      "value": "Talk to a Research Expert"
-    },
     "headline": {
       "value": "Get Expert Guidance to Build a Strong Research Synopsis"
     },
@@ -130,176 +124,219 @@
     "integrityBold": {
       "value": "You write. We guide."
     },
-    "integrityText": [
+    "button1": {
+      "value": "Get Synopsis Guidance"
+    }
+  },
+  "strugglingSection": {
+    "heading": "Struggling to Structure Your Research Synopsis?",
+    "intro": "Preparing a synopsis can be challenging when you are unsure about:",
+    "points": [
+      "How to frame and refine your research topic",
+      "How to define clear research objectives",
+      "How to develop appropriate research questions or hypotheses",
+      "How to identify and organize relevant literature",
+      "How to select an appropriate research methodology",
+      "How to structure your research framework",
+      "How different sections of the synopsis connect with each other",
+      "Whether your proposed research approach is academically appropriate"
+    ],
+    "conclusion": "You don't have to figure everything out alone. With personalized guidance, you can understand the research process, make informed research decisions, and develop your synopsis step by step."
+  },
+  "whatIsGuidance": {
+    "heading": "What Is Synopsis Guidance?",
+    "paragraph1": "WRIRK’s Synopsis Guidance is a one-on-one research mentorship service designed to help scholars understand and develop their research synopsis.",
+    "paragraph2": "Our experts guide you through the different components of your synopsis, explain research concepts and methodologies, review your work, identify areas that need improvement, and help you make better research decisions.",
+    "calloutTitle": "We Don't Write Your Synopsis for You.",
+    "calloutText": "We guide you, teach you, review your work, and help you understand how to develop it yourself.",
+    "calloutFooter": "Your research remains your work and your intellectual contribution."
+  },
+  "whatWeGuide": {
+    "heading": "What We Help You With",
+    "items": [
       {
-        "value": "With personalized guidance, you can understand the research process, make informed research decisions, and develop your synopsis step by step."
+        "title": "Research Topic & Problem",
+        "description": "Understand how to refine your research topic and define a meaningful research problem."
+      },
+      {
+        "title": "Research Objectives",
+        "description": "Learn how to develop clear, relevant, and achievable research objectives."
+      },
+      {
+        "title": "Research Questions & Hypotheses",
+        "description": "Get guidance on framing research questions and hypotheses appropriate to your study."
+      },
+      {
+        "title": "Literature Review",
+        "description": "Learn how to identify relevant studies, understand existing research, and connect the literature with your research problem."
+      },
+      {
+        "title": "Research Methodology",
+        "description": "Understand how to select and structure an appropriate research methodology based on your research objectives."
+      },
+      {
+        "title": "Research Framework",
+        "description": "Get guidance on developing a logical research framework and understanding the relationship between key research elements."
+      },
+      {
+        "title": "Synopsis Structure",
+        "description": "Understand what each section of your synopsis should communicate and how the different sections should connect."
+      },
+      {
+        "title": "References & Citations",
+        "description": "Receive guidance on appropriate citation practices, reference management, and academic formatting."
+      },
+      {
+        "title": "Expert Review & Feedback",
+        "description": "Share your work with our research experts and receive constructive feedback to identify gaps, inconsistencies, and areas for improvement."
       }
     ]
   },
-  "whyTrustUs": {
-    "quote": {
-      "value": "Your Research. Your Work. Our Guidance. We guide. We teach. We don't write."
-    },
-    "heading": {
-      "value": "Struggling to Structure Your Research Synopsis?"
-    },
-    "features": [
+  "howItWorks": {
+    "heading": "How Our Synopsis Guidance Works",
+    "steps": [
       {
-        "icon": "TrendingUp",
-        "title": "Refine Topic",
-        "description": "How to frame and refine your research topic and objectives."
+        "step": "Step 1",
+        "title": "Understand Your Research",
+        "description": "We begin by understanding your research topic, academic requirements, current progress, and the challenges you are facing."
       },
       {
-        "icon": "Globe",
-        "title": "Methodology",
-        "description": "How to select an appropriate research methodology."
+        "step": "Step 2",
+        "title": "Discuss & Learn",
+        "description": "Connect with a research expert who explains the relevant concepts, research methods, and approaches according to your research requirements."
       },
       {
-        "icon": "Award",
-        "title": "Framework",
-        "description": "How to structure your research framework and connect sections."
+        "step": "Step 3",
+        "title": "Develop Your Work",
+        "description": "Apply the guidance to your own synopsis and develop each section with a clear understanding of what you are doing and why."
       },
       {
-        "icon": "BookOpen",
-        "title": "Literature",
-        "description": "How to identify and organize relevant literature."
+        "step": "Step 4",
+        "title": "Review & Improve",
+        "description": "Our experts review your work, identify areas that require improvement, and provide guidance for strengthening your synopsis."
+      },
+      {
+        "step": "Step 5",
+        "title": "Move Forward with Confidence",
+        "description": "Continue developing your research with a clearer understanding of your methodology, research structure, and academic direction."
       }
     ]
   },
-  "trustedPartner": {
-    "heading": {
-      "value": "What Is Synopsis Guidance?"
-    },
-    "ctaText1": {
-      "value": "We don't write your synopsis for you."
-    },
-    "ctaText2": {
-      "value": "We guide you, teach you, review your work, and help you understand how to develop it yourself."
-    },
-    "features": [
+  "whyChoose": {
+    "heading": "Why Choose WRIRK?",
+    "reasons": [
       {
-        "icon": "ShieldCheck",
         "title": "One-on-One Research Guidance",
         "description": "Get personalized attention based on your specific research requirements."
       },
       {
-        "icon": "Users",
         "title": "Experienced Research Mentors",
         "description": "Learn from professionals with extensive experience across different research domains."
       },
       {
-        "icon": "FileCheck2",
         "title": "Domain-Specific Guidance",
-        "description": "Receive guidance relevant to your research area."
+        "description": "Receive guidance relevant to your research area rather than a generic, one-size-fits-all approach."
       },
       {
-        "icon": "Activity",
         "title": "Learn While You Research",
-        "description": "Understand the concepts and decisions behind your research."
+        "description": "Understand the concepts, methods, and decisions behind your research instead of simply receiving a finished document."
       },
       {
-        "icon": "BookOpen",
         "title": "Feedback on Your Work",
-        "description": "Get expert observations to improve weak areas."
+        "description": "Get expert observations and suggestions to help you identify and improve weak areas in your synopsis."
       },
       {
-        "icon": "ArrowRight",
         "title": "Flexible Guidance",
-        "description": "Discuss your research challenges and receive guidance according to your progress."
-      }
-    ],
-    "ctaHeading": {
-      "value": "You remain the researcher and author of your work."
-    }
-  },
-  "services": {
-    "heading": {
-      "value": "What We Help You With"
-    },
-    "description": [
-      {
-        "value": "Comprehensive support for your synopsis development."
-      }
-    ],
-    "cards": [
-      {
-        "id": "s1",
-        "icon": "BookOpen",
-        "title": "Research Topic & Problem",
-        "desc": "Understand how to refine your research topic and define a meaningful research problem."
-      },
-      {
-        "id": "s2",
-        "icon": "Activity",
-        "title": "Methodology & Framework",
-        "desc": "Understand how to select and structure an appropriate research methodology and logical framework."
-      },
-      {
-        "id": "s3",
-        "icon": "Users",
-        "title": "Expert Review & Feedback",
-        "desc": "Share your work with our experts and receive constructive feedback to identify gaps and areas for improvement."
+        "description": "Discuss your research challenges and receive guidance according to your research progress and requirements."
       }
     ]
   },
-  "process": {
-    "heading": {
-      "value": "How Our Synopsis Guidance Works"
-    },
-    "description": [
-      {
-        "value": "Step by step to a perfect synopsis."
-      }
+  "whoCanBenefit": {
+    "heading": "Who Can Benefit?",
+    "intro": "Our Synopsis Guidance Service can help:",
+    "audiences": [
+      "PhD Scholars",
+      "PhD Aspirants",
+      "Master's Students",
+      "Faculty Members",
+      "Independent Researchers",
+      "Research Professionals"
     ],
-    "steps": [
-      {
-        "step": "01",
-        "title": "Understand Your Research",
-        "desc": "We begin by understanding your research topic, requirements, and challenges."
-      },
-      {
-        "step": "02",
-        "title": "Discuss & Learn",
-        "desc": "Connect with an expert who explains relevant concepts and methods."
-      },
-      {
-        "step": "03",
-        "title": "Develop Your Work",
-        "desc": "Apply the guidance to your own synopsis and develop each section."
-      },
-      {
-        "step": "04",
-        "title": "Review & Improve",
-        "desc": "Our experts review your work and provide guidance for strengthening your synopsis."
-      }
-    ]
+    "closing": "Whether you are starting your research journey or already working on your synopsis, our guidance can help you move forward with greater clarity."
+  },
+  "ourPhilosophy": {
+    "heading": "Your Research. Your Work. Our Guidance.",
+    "subheading": "At WRIRK, we believe research guidance should empower scholars, not replace them.",
+    "body1": "We do not write your synopsis or conduct your research on your behalf.",
+    "body2": "Instead, our experts help you:",
+    "body3": "Understand → Learn → Apply → Review → Improve",
+    "flow": [
+      "Understand",
+      "Learn",
+      "Apply",
+      "Review",
+      "Improve"
+    ],
+    "bullets": [
+      "You remain the researcher and author of your work.",
+      "We guide. We teach. We don't write."
+    ],
+    "body4": "You remain the researcher and author of your work.",
+    "tagline": "We Guide. We Teach. We Don't Write."
+  },
+  "testimonialsSection": {
+    "heading": "Testimonials",
+    "subtext": "What Scholars Say About Our Guidance"
   },
   "faqs": {
-    "heading": {
-      "value": "Frequently Asked Questions"
-    },
-    "description": [
-      {
-        "value": "Common questions about Synopsis Guidance"
-      }
-    ],
+    "heading": "FAQs",
     "items": [
       {
-        "q": "Does WRIRK write the synopsis for me?",
+        "q": "1. Does WRIRK write the synopsis for me?",
         "a": "No. WRIRK provides research guidance and mentorship. We do not write your synopsis for you. Our experts explain the research process, guide you through different sections, and review your work."
       },
       {
-        "q": "What areas of synopsis development do you guide?",
+        "q": "2. What areas of synopsis development do you guide?",
         "a": "We provide guidance on areas such as research topics, research problems, objectives, research questions, hypotheses, literature review, methodology, research framework, references, citations, and overall synopsis structure."
       },
       {
-        "q": "Can I get guidance if I am new to research?",
+        "q": "3. Can I get guidance if I am new to research?",
         "a": "Yes. Our guidance is designed to help scholars understand research concepts and processes, even if they are facing research challenges for the first time."
       },
       {
-        "q": "Will an expert review my synopsis?",
+        "q": "4. Will an expert review my synopsis?",
         "a": "Yes. You can discuss your work with our research experts and receive feedback on areas that may require improvement or clarification."
+      },
+      {
+        "q": "5. Do you provide guidance for different research domains?",
+        "a": "Yes. We provide domain-specific guidance based on the nature and requirements of your research."
+      },
+      {
+        "q": "6. Can you help me understand research methodology?",
+        "a": "Yes. Our experts can explain different methodological approaches and help you understand which approach may be appropriate for your research requirements."
+      },
+      {
+        "q": "7. Will you provide research papers or supporting studies?",
+        "a": "Where relevant, our guidance may include assistance in identifying relevant research studies and literature that can help you understand your research area."
+      },
+      {
+        "q": "8. Is the guidance available online?",
+        "a": "Yes. Guidance can be provided through online interactions. Availability of offline guidance may depend on location and expert availability."
+      },
+      {
+        "q": "9. Can I take guidance only for the section where I am stuck?",
+        "a": "Yes. You can discuss specific research challenges or sections where you need clarification, subject to the scope of the guidance program."
+      },
+      {
+        "q": "10. Is my research work still my own?",
+        "a": "Absolutely. Your research remains your intellectual work. WRIRK provides guidance, mentorship, review, and academic support without replacing your role as the researcher."
       }
     ]
+  },
+  "finalCTA": {
+    "heading": "Don't Let Research Confusion Slow You Down",
+    "subtext": "Get the right guidance, understand your research better, and move forward with confidence.",
+    "tagline": "Your Research. Your Work. Expert Guidance.",
+    "ctaText": "Get Synopsis Guidance"
   }
 }

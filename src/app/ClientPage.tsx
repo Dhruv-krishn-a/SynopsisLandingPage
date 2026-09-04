@@ -2,14 +2,143 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { ChevronDown, BookOpen, Award, TrendingUp, Users, Clock, ShieldCheck, PenTool, Send, PhoneCall, ArrowRight, FileCheck2, Quote, Activity, Globe, CheckCircle, Star, Sparkles } from 'lucide-react';
+import { 
+  ChevronDown, TrendingUp, Users, ShieldCheck, 
+  PenTool, ArrowRight, Quote, 
+  Globe, CheckCircle, Sparkles, HelpCircle, GraduationCap, Target, 
+  FileText, Lightbulb, Compass, Layers, Search, BarChart3, 
+  CheckSquare, MessageSquareQuote, UserCheck, BadgeCheck
+} from 'lucide-react';
 import dynamic from 'next/dynamic';
 import SharedForm from '@/components/SharedForm';
 import ReviewCarousel from '@/components/ReviewCarousel';
+import { GoogleReview } from '@/components/GoogleReviewCard';
 import MouseGlowEffect from '@/components/MouseGlowEffect';
 
 const AnimatedCounter = dynamic(() => import('@/components/AnimatedCounter'), { ssr: false });
 const PopupForm = dynamic(() => import('@/components/PopupForm'), { ssr: false });
+
+type ContentValue = { value: string };
+
+interface ContentItem {
+  icon?: string;
+  title?: string;
+  desc?: string;
+  description?: string;
+  subtitle?: string;
+  number?: string;
+  label?: string;
+  text?: string;
+  step?: string;
+  stepNumber?: string;
+  heading?: string;
+  details?: string[];
+  points?: string[];
+  q?: string;
+  a?: string;
+  question?: string;
+  answer?: string;
+  value?: string;
+  href?: string;
+}
+
+interface SiteContent {
+  globalSettings?: {
+    brandName?: ContentValue;
+    heroBadgeText?: ContentValue;
+    phoneNumber?: ContentValue;
+    whatsappNumber?: ContentValue;
+    whatsappMessage?: ContentValue;
+    callNumber?: ContentValue;
+    [key: string]: unknown;
+  };
+  hero?: {
+    tag?: ContentValue;
+    title?: ContentValue;
+    headline?: ContentValue;
+    subtitle?: ContentValue;
+    button1?: ContentValue;
+    button2?: ContentValue;
+    integrityBold?: ContentValue;
+    integrityText?: Array<ContentValue>;
+    description?: Array<ContentValue>;
+    trustBadges?: Array<{ text: string; subtext?: string }>;
+    [key: string]: unknown;
+  };
+  metrics?: ContentItem[];
+  strugglingSection?: {
+    heading?: string;
+    intro?: string;
+    points?: string[];
+    conclusion?: string;
+  };
+  whatIsGuidance?: {
+    heading?: string;
+    paragraph1?: string;
+    paragraph2?: string;
+    calloutTitle?: string;
+    calloutText?: string;
+    calloutFooter?: string;
+  };
+  whatWeGuide?: {
+    heading?: string;
+    items?: ContentItem[];
+  };
+  howItWorks?: {
+    heading?: string;
+    steps?: ContentItem[];
+  };
+  whyChoose?: {
+    heading?: string;
+    reasons?: ContentItem[];
+  };
+  whoCanBenefit?: {
+    heading?: string;
+    intro?: string;
+    audiences?: string[];
+    closing?: string;
+  };
+  ourPhilosophy?: {
+    heading?: string;
+    subheading?: string;
+    body1?: string;
+    body2?: string;
+    body3?: string;
+    flow?: string[];
+    bullets?: string[];
+    body4?: string;
+    tagline?: string;
+  };
+  testimonialsSection?: {
+    heading?: string;
+    subtext?: string;
+  };
+  reviews?: GoogleReview[];
+  faqs?: {
+    heading?: string;
+    items?: ContentItem[];
+  };
+  finalCTA?: {
+    heading?: string;
+    subtext?: string;
+    tagline?: string;
+    ctaText?: string;
+  };
+  footer?: {
+    brandName?: ContentValue;
+    tagline?: ContentValue;
+    description?: Array<ContentValue>;
+    socials?: {
+      whatsapp?: string;
+      linkedin?: string;
+      youtube?: string;
+    };
+    links?: Array<{ text: string; href: string }>;
+    copyright?: ContentValue;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
 
 const useScrollProgress = (ref: React.RefObject<HTMLDivElement | null>) => {
   const [progress, setProgress] = useState(0);
@@ -32,7 +161,6 @@ const useScrollProgress = (ref: React.RefObject<HTMLDivElement | null>) => {
   return progress;
 };
 
-// Fast-Loading FadeIn Component (Pre-triggers 400px before reaching viewport)
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -62,13 +190,13 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-export default function ClientPage({ initialContent }: { initialContent: any }) {
+export default function ClientPage({ initialContent }: { initialContent: SiteContent }) {
   const content = initialContent;
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [scrollPercent, setScrollPercent] = useState(0);
-  const [winScrollY, setWinScrollY] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  const [selectedModuleMessage, setSelectedModuleMessage] = useState('');
+  const [isHeroFormHighlighted, setIsHeroFormHighlighted] = useState(false);
   
   const processRef = useRef<HTMLDivElement>(null);
   const processProgress = useScrollProgress(processRef);
@@ -77,11 +205,8 @@ export default function ClientPage({ initialContent }: { initialContent: any }) 
   const [footerHeight, setFooterHeight] = useState(0);
 
   useEffect(() => {
-    setMounted(true);
-    
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      setWinScrollY(window.scrollY);
       const winScroll = document.documentElement.scrollTop;
       const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       setScrollPercent(height > 0 ? (winScroll / height) * 100 : 0);
@@ -102,107 +227,168 @@ export default function ClientPage({ initialContent }: { initialContent: any }) 
     };
   }, []);
 
-  const IconMap: Record<string, any> = { ChevronDown, BookOpen, Award, TrendingUp, Users, Clock, ShieldCheck, PenTool, Send, PhoneCall, ArrowRight, FileCheck2, Quote, Activity, Globe, CheckCircle, Star };
-  const getIcon = (iconName: string, defaultIcon: any) => IconMap[iconName] || defaultIcon;
+  const whatWeGuideIcons = [
+    Target, Layers, Search, Compass, BarChart3, 
+    TrendingUp, MessageSquareQuote, FileText, CheckSquare, 
+    PenTool, ShieldCheck, ArrowRight
+  ];
+
+  const whyChooseIcons = [
+    UserCheck, GraduationCap, Globe, Lightbulb, BadgeCheck, Users
+  ];
+
+  const scrollToCenter = (elementId: string) => {
+    const targetElement = document.getElementById(elementId);
+    if (targetElement) {
+      const elementRect = targetElement.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middleOffset = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+      window.scrollTo({
+        top: Math.max(0, middleOffset),
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const triggerHeroFormHighlight = () => {
+    scrollToCenter('hero-form-card');
+    setIsHeroFormHighlighted(true);
+    setTimeout(() => {
+      const nameInput = document.getElementById('hero-name');
+      if (nameInput) {
+        nameInput.focus();
+      }
+    }, 450);
+    setTimeout(() => {
+      setIsHeroFormHighlighted(false);
+    }, 2400);
+  };
+
+  const handleGuidanceClick = (cardTitle?: string) => {
+    if (cardTitle) {
+      setSelectedModuleMessage(`I need guidance on: ${cardTitle}`);
+    }
+    scrollToCenter('bottom-cta-card');
+    setTimeout(() => {
+      const msgInput = document.getElementById('bottom-cta-message');
+      if (msgInput) {
+        msgInput.focus();
+      }
+    }, 450);
+  };
 
   return (
-    <main className="min-h-screen bg-[#07050f] text-stone-300 font-sans selection:bg-purple-700/40 relative overflow-x-hidden">      
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes slideUpFade { 
-          from { opacity: 0; transform: translateY(20px); filter: blur(4px); } 
-          to { opacity: 1; transform: translateY(0); filter: blur(0); } 
-        }
-        @keyframes shimmer {
-          100% { transform: translateX(150%); }
+    <main className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black antialiased relative">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes subtle-shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
         }
         .animate-shimmer {
-          animation: shimmer 2s infinite;
+          animation: subtle-shimmer 3.5s infinite;
         }
       `}} />
 
-      {/* Header */}
-      <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#07050f]/90 backdrop-blur-2xl border-b border-violet-500/20 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.8)]' : 'bg-transparent py-5'}`}>
+      {/* Header Navbar */}
+      <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#030712]/95 backdrop-blur-2xl border-b border-cyan-500/20 py-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.9)]' : 'bg-transparent py-6'}`}>
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between relative">
-          <div className="flex items-center gap-3 md:gap-4 group cursor-pointer active:scale-95 transition-transform duration-200">
-            <Image priority={true} src="/WrirkLogoOld.png" alt="WRIrk Logo" width={80} height={80} className="h-12 w-12 md:h-14 md:w-14 object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.7)] group-hover:drop-shadow-[0_0_25px_rgba(139,92,246,0.9)] transition-all duration-300" />
-            <span className="font-serif text-[18px] lg:text-[22px] tracking-widest font-normal text-white uppercase drop-shadow-md translate-y-[2px]">WRIRK</span>
+          
+          <div className="flex items-center gap-3 group cursor-pointer active:scale-95 transition-transform duration-200">
+            <Image priority={true} src="/WrirkLogoOld.png" alt="WRIRK Logo" width={52} height={52} className="h-11 w-11 md:h-13 md:w-13 object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.7)] group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.9)] transition-all duration-300" />
+            <span className="font-serif text-2xl md:text-3xl tracking-widest font-normal text-white uppercase drop-shadow-md">WRIRK</span>
           </div>
-          <nav className="hidden lg:flex items-center gap-10 text-xs font-semibold uppercase tracking-[0.1em]">
-            {['Services', 'Process', 'Testimonials', 'FAQs'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="relative group text-stone-300 hover:text-violet-400 transition-colors duration-300">
-                {item}
-                <span className="absolute -bottom-1 left-1/2 w-0 h-[1px] bg-violet-400 group-hover:w-full group-hover:left-0 transition-all duration-300 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></span>
+
+          <nav className="hidden lg:flex items-center gap-10 text-sm font-bold uppercase tracking-widest">
+            {[
+              { label: 'SERVICES', href: '#what-we-guide' },
+              { label: 'PROCESS', href: '#how-it-works' },
+              { label: 'TESTIMONIALS', href: '#testimonials' },
+              { label: 'FAQS', href: '#faqs' }
+            ].map((item) => (
+              <a key={item.label} href={item.href} className="relative group text-slate-200 hover:text-cyan-400 transition-colors duration-300">
+                {item.label}
+                <span className="absolute -bottom-1 left-1/2 w-0 h-[1.5px] bg-cyan-400 group-hover:w-full group-hover:left-0 transition-all duration-300 shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
               </a>
             ))}
           </nav>
-          <a href="#final-cta" className="relative px-5 py-2 rounded-full border border-violet-500/40 bg-violet-500/10 backdrop-blur-md hover:border-violet-400 text-xs font-semibold uppercase tracking-[0.1em] text-stone-200 hover:text-white transition-all duration-500 shadow-[0_0_15px_rgba(139,92,246,0.2)] group overflow-hidden hover:shadow-[0_0_25px_rgba(139,92,246,0.5)]">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-400/30 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none"></div>
-            <span className="relative z-10 flex items-center gap-2">Consult Us <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-300" /></span>
-          </a>
+
+          <button 
+            type="button"
+            onClick={triggerHeroFormHighlight}
+            className="relative px-6 py-3 rounded-full border border-cyan-400/80 bg-[#06202e]/80 text-cyan-300 font-extrabold uppercase tracking-wider text-xs md:text-sm shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.7)] hover:bg-[#082a3d] hover:text-white transition-all duration-300 flex items-center gap-2 group overflow-hidden cursor-pointer"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none"></div>
+            <span className="relative z-10 flex items-center gap-2">CONTACT US <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" /></span>
+          </button>
         </div>
-        {/* Scroll Progress Bar */}
-        <div className="absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-violet-500 via-purple-400 to-indigo-500 shadow-[0_0_8px_rgba(139,92,246,0.9)] transition-all duration-150 ease-out z-50" style={{ width: `${scrollPercent}%` }}></div>
+
+        <div className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-cyan-500 via-sky-400 to-indigo-500 shadow-[0_0_8px_rgba(34,211,238,0.9)] transition-all duration-150 ease-out z-50" style={{ width: `${scrollPercent}%` }}></div>
       </header>
 
-      {/* Main Content Wrapper (For Footer Curtain Reveal) */}
-      <div style={{ marginBottom: footerHeight }} className="relative z-10 bg-[#07050f] shadow-[0_20px_50px_rgba(0,0,0,1)] transition-all duration-300">
-        
+      <div style={{ marginBottom: footerHeight }} className="relative z-10 bg-[#030712] shadow-[0_20px_50px_rgba(0,0,0,1)] transition-all duration-300">
         <MouseGlowEffect />
         
-        {/* Deep Violet & Indigo Backdrop Gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-purple-950/15 to-transparent pointer-events-none z-0"></div>
-
-        {/* Hero Section (Side-by-Side: Text Left, Form Right) */}
-        <section className="relative pt-32 pb-14 md:pt-40 md:pb-16 px-6 md:px-12 z-10" id="hero">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start relative z-10">
+        <section className="relative pt-36 pb-16 md:pt-44 md:pb-24 px-6 md:px-12 z-10" id="hero">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start relative z-10">
             
-            {/* Left Side: Headline & Description */}
-            <div className="lg:col-span-7 text-left space-y-6 pt-2">
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif text-white leading-[1.15] drop-shadow-xl flex flex-wrap gap-x-3 gap-y-1">
-                {content.hero.headline.value.split(' ').map((word: string, i: number) => (
-                  <span 
-                    key={i} 
-                    className={`inline-block transition-all duration-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} 
-                    style={{ transitionDelay: `${i * 60}ms` }}
-                  >
-                    {word}
-                  </span>
-                ))}
-              </h1>
+            <div className="lg:col-span-7 text-left space-y-7 pt-2">
               
-              <div 
-                className={`h-px w-20 bg-violet-400 shadow-[0_0_12px_rgba(139,92,246,0.9)] transition-all duration-1000 ease-out ${mounted ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}
-                style={{ transitionDelay: '600ms' }}
-              ></div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.5rem] font-extrabold text-white leading-[1.18] tracking-tight [text-wrap:balance] drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]">
+                Get Expert Guidance to Build a{' '}
+                <span className="inline-block bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(34,211,238,0.5)]">
+                  Strong Research Synopsis
+                </span>
+              </h1>
 
-              <p 
-                className={`text-base md:text-xl text-stone-200 font-light leading-relaxed drop-shadow-md transition-all duration-1000 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
-                style={{ transitionDelay: '800ms' }}
-              >
-                {content.hero.description.map((p: any) => p.value).join(' ')}
+              <p className="text-slate-200 text-lg md:text-xl font-normal leading-relaxed max-w-2xl">
+                {content.hero?.description?.[0]?.value || "Get personalized, one-on-one guidance from research experts and learn how to develop your synopsis with greater clarity and confidence."}
               </p>
 
-              {/* Feature Badges */}
-              <div className={`flex flex-wrap gap-3 pt-2 transition-all duration-1000 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '1000ms' }}>
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-200 text-xs font-semibold backdrop-blur-md shadow-[0_0_12px_rgba(139,92,246,0.15)]">
-                  <ShieldCheck className="h-4 w-4 text-violet-400" /> 1-on-1 PhD Mentorship
-                </div>
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-200 text-xs font-semibold backdrop-blur-md shadow-[0_0_12px_rgba(139,92,246,0.15)]">
-                  <Award className="h-4 w-4 text-violet-400" /> Topic & Framework
-                </div>
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-200 text-xs font-semibold backdrop-blur-md shadow-[0_0_12px_rgba(139,92,246,0.15)]">
-                  <CheckCircle className="h-4 w-4 text-violet-400" /> 100% Authentic Guidance
-                </div>
+              <div className="bg-[#081226]/90 border-l-4 border-cyan-400 rounded-xl p-6 md:p-7 border-t border-r border-b border-cyan-500/20 shadow-xl backdrop-blur-md space-y-3">
+                <p className="text-cyan-400 font-bold text-lg md:text-xl">
+                  {content.hero?.integrityBold?.value || "You write. We guide."}
+                </p>
+                <p className="text-slate-300 text-sm md:text-base font-normal leading-relaxed">
+                  We provide expert mentorship, synopsis guidance, research framework support, and academic review—helping you submit with confidence while maintaining the highest standards of academic integrity.
+                </p>
               </div>
+
+              <div className="pt-2 flex flex-wrap items-center gap-4">
+                <button 
+                  type="button"
+                  onClick={triggerHeroFormHighlight}
+                  className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm md:text-base uppercase tracking-widest shadow-[0_0_25px_rgba(34,211,238,0.4)] hover:shadow-[0_0_35px_rgba(34,211,238,0.7)] transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
+                >
+                  <span>{content.hero?.button1?.value || "Get Synopsis Guidance"}</span>
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+
             </div>
 
-            {/* Right Side: Contact Form Card */}
             <div className="lg:col-span-5 w-full" id="contact">
-              <FadeIn delay={200}>
-                <div className="bg-[#07050f]/95 backdrop-blur-2xl border border-violet-500/35 rounded-2xl p-6 md:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)] hover:border-violet-500/60 transition-all duration-500 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-56 h-56 bg-violet-500/20 rounded-full blur-[70px] pointer-events-none -translate-y-1/2 translate-x-1/4"></div>
-                  <h2 className="text-xl md:text-2xl font-serif text-white mb-6 text-center border-b border-white/10 pb-3 drop-shadow-sm">Request a Confidential Review</h2>
-                  <SharedForm formId="hero" buttonText="Submit Details" />
+              <FadeIn delay={150}>
+                <div 
+                  id="hero-form-card" 
+                  className={`bg-[#060c19]/95 backdrop-blur-2xl border rounded-2xl p-7 md:p-9 transition-all duration-500 relative overflow-hidden ${
+                    isHeroFormHighlighted 
+                      ? 'border-cyan-400 ring-4 ring-cyan-400/60 shadow-[0_0_80px_rgba(34,211,238,0.9)] scale-[1.03]' 
+                      : 'border-[#1e293b] hover:border-cyan-500/40 shadow-[0_0_50px_rgba(14,165,233,0.15)]'
+                  }`}
+                >
+                  {isHeroFormHighlighted && (
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs uppercase px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.9)] z-20 flex items-center gap-1.5 animate-bounce">
+                      <Sparkles className="w-3.5 h-3.5" /> Please Fill Out This Form Below
+                    </div>
+                  )}
+
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/15 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/4"></div>
+
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white mb-6 text-center tracking-tight pt-2">
+                    Contact <span className="bg-gradient-to-r from-cyan-400 to-sky-400 bg-clip-text text-transparent font-extrabold">Us</span>
+                  </h2>
+
+                  <SharedForm formId="hero" buttonText="REQUEST FREE CONSULTATION" />
                 </div>
               </FadeIn>
             </div>
@@ -210,210 +396,394 @@ export default function ClientPage({ initialContent }: { initialContent: any }) 
           </div>
         </section>
 
-        {/* Metrics Section */}
-        <section className="py-10 md:py-14 border-y border-violet-500/20 bg-black/40 backdrop-blur-md z-10 relative">
+        {/* Metrics Bar */}
+        <section className="py-12 md:py-16 border-y border-[#1e293b] bg-[#030712]/90 backdrop-blur-md z-10 relative">
           <FadeIn>
-            <div className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-white/10">
-                 {content.metrics.map((metric: any, i: number) => {
-                   const cleanValue = metric.value.replace(/,/g, '');
-                   const numMatch = cleanValue.match(/\d+/);
-                   const num = numMatch ? parseInt(numMatch[0]) : null;
-                   const suffix = metric.value.replace(/[\d,]+/, '').trim();
-                   return (
-                     <div key={i} className="text-center px-3 relative group">
-                        <div className="absolute inset-0 flex items-center justify-center opacity-5 group-hover:opacity-15 transition-opacity duration-500 pointer-events-none">
-                          <Star className="w-20 h-20 text-violet-400" />
-                        </div>
-                        <div className="text-3xl md:text-4xl font-serif text-white mb-2 drop-shadow-md relative z-10">
-                          {num !== null ? <AnimatedCounter end={num} suffix={suffix} duration={2000} /> : metric.value}
-                        </div>
-                        <div className="text-[11px] text-violet-400/90 font-bold uppercase tracking-[0.12em] relative z-10">{metric.label}</div>
-                     </div>
-                   );
-                 })}
+            <div className="max-w-7xl mx-auto px-4 md:px-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-center">
+                 {content.metrics?.map((metric: ContentItem, i: number) => {
+                    const cleanValue = (metric.value || '').replace(/,/g, '');
+                    const numMatch = cleanValue.match(/\d+/);
+                    const num = numMatch ? parseInt(numMatch[0]) : null;
+                    const suffix = (metric.value || '').replace(/[\d,]+/, '').trim();
+                    
+                    return (
+                      <div 
+                        key={i} 
+                        className={`flex flex-col items-center justify-center text-center px-4 py-5 md:py-3 relative ${
+                          content.metrics && i < content.metrics.length - 1 ? 'lg:border-r border-white/10' : ''
+                        }`}
+                      >
+                         <div className="min-h-[72px] flex items-center justify-center">
+                           {num !== null ? (
+                             <span className="text-5xl sm:text-6xl lg:text-6xl font-extrabold text-white tracking-tight leading-none drop-shadow-md">
+                               <AnimatedCounter end={num} suffix={suffix} duration={2000} />
+                             </span>
+                           ) : (
+                             <span className="text-3xl sm:text-4xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight drop-shadow-md">
+                               Confidential <br /> &amp; Ethical
+                             </span>
+                           )}
+                         </div>
+
+                         <div className="text-xs sm:text-sm font-extrabold text-cyan-400 tracking-widest uppercase mt-3.5">
+                           {metric.label}
+                         </div>
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           </FadeIn>
         </section>
 
-        {/* What is Synopsis Guidance Section (trustedPartner Content) */}
-        <section className="py-14 md:py-18 px-6 relative z-10 bg-gradient-to-b from-[#07050f] via-[#120b24]/40 to-[#07050f] border-b border-violet-500/20">
+        {/* 2. STRUGGLING TO STRUCTURE YOUR RESEARCH SYNOPSIS? */}
+        <section className="py-20 md:py-28 px-6 relative z-10" id="struggling">
           <div className="max-w-6xl mx-auto">
+            
             <FadeIn>
-              <div className="text-center max-w-3xl mx-auto mb-12">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold uppercase tracking-widest mb-4">
-                  <ShieldCheck className="h-4 w-4 text-violet-400" /> {content.trustedPartner?.ctaText1?.value}
-                </div>
-                <h2 className="text-3xl md:text-5xl font-serif text-white mb-4 drop-shadow-md">
-                  {content.trustedPartner?.heading?.value}
+              <div className="text-center max-w-4xl mx-auto mb-14">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight leading-tight [text-wrap:balance]">
+                  {content.strugglingSection?.heading}
                 </h2>
-                <p className="text-stone-300 font-light text-base md:text-lg leading-relaxed">
-                  {content.trustedPartner?.ctaText2?.value}
+                <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-6"></div>
+                <p className="text-slate-200 text-lg md:text-xl font-normal">
+                  {content.strugglingSection?.intro}
                 </p>
               </div>
             </FadeIn>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(content.trustedPartner?.features || []).map((feat: any, idx: number) => {
-                const Icon = getIcon(feat.icon, ShieldCheck);
-                return (
-                  <FadeIn key={idx} delay={idx * 80}>
-                    <div className="bg-white/5 backdrop-blur-xl border border-violet-500/20 p-6 rounded-2xl flex flex-col items-start gap-4 hover:border-violet-400/50 hover:bg-violet-500/10 transition-all duration-500 group shadow-lg">
-                      <div className="p-3 bg-violet-500/10 rounded-xl border border-violet-500/30 text-violet-400 group-hover:scale-110 transition-transform">
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-serif text-white mb-1.5">{feat.title}</h3>
-                        <p className="text-stone-300 font-light text-xs md:text-sm leading-relaxed">{feat.description}</p>
-                      </div>
+            {/* 8 Challenge Points Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 mb-12">
+              {content.strugglingSection?.points?.map((point: string, idx: number) => (
+                <FadeIn key={idx} delay={idx * 30}>
+                  <div className="bg-[#070e1e]/80 backdrop-blur-xl border border-[#1e293b] hover:border-cyan-500/50 p-5 md:p-6 rounded-xl flex items-start gap-4 hover:bg-[#0a152d] transition-all duration-300 group shadow-md">
+                    <div className="shrink-0 p-2.5 rounded-lg bg-cyan-950/80 text-cyan-400 border border-cyan-500/30 group-hover:scale-110 transition-transform">
+                      <HelpCircle className="h-6 w-6" />
                     </div>
-                  </FadeIn>
-                );
-              })}
+                    <span className="text-slate-200 text-base md:text-lg font-medium leading-snug pt-0.5">
+                      {point}
+                    </span>
+                  </div>
+                </FadeIn>
+              ))}
             </div>
 
+            {/* Section Conclusion */}
             <FadeIn delay={300}>
-              <div className="mt-10 p-4 rounded-xl bg-violet-500/10 border border-violet-500/30 text-center max-w-2xl mx-auto">
-                <p className="text-violet-200 text-sm md:text-base font-medium">
-                  {content.trustedPartner?.ctaHeading?.value}
+              <div className="bg-gradient-to-r from-[#081226] via-[#0c1a38] to-[#081226] border border-cyan-500/40 rounded-2xl p-7 md:p-9 text-center shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                <p className="text-cyan-200 text-xl md:text-2xl font-bold leading-relaxed whitespace-pre-line">
+                  &quot;{content.strugglingSection?.conclusion}&quot;
                 </p>
               </div>
             </FadeIn>
+
           </div>
         </section>
 
-        {/* Why Trust Us / Sticky Scroll */}
-        <section className="py-14 md:py-18 px-6 relative z-10" id="why-publish">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        {/* 3. WHAT IS SYNOPSIS GUIDANCE? */}
+        <section className="py-20 md:py-28 px-6 relative z-10 bg-[#02050e] border-y border-[#1e293b]" id="what-is-guidance">
+          <div className="max-w-5xl mx-auto">
             
-            <div className="lg:col-span-5 relative">
-              <FadeIn>
-                <div className="lg:sticky lg:top-36 mb-8 lg:mb-0">
-                  <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif text-white mb-4 drop-shadow-md leading-tight">{content.whyTrustUs.heading?.value}</h2>
-                  <div className="h-px w-14 bg-violet-400 shadow-[0_0_10px_rgba(139,92,246,0.9)] mb-4"></div>
-                  <p className="text-stone-300 font-light text-base leading-relaxed">Explore how our step-by-step guidance helps you build an approved research synopsis.</p>
-                </div>
+            <FadeIn>
+              <div className="text-center max-w-4xl mx-auto mb-12">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                  {content.whatIsGuidance?.heading}
+                </h2>
+                <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-6"></div>
+              </div>
+            </FadeIn>
+
+            <div className="space-y-6 text-slate-200 text-lg md:text-xl font-normal leading-relaxed mb-14 max-w-4xl mx-auto text-center md:text-left">
+              <FadeIn delay={100}>
+                <p className="p-7 rounded-2xl bg-[#070e1e]/90 border border-[#1e293b]">
+                  {content.whatIsGuidance?.paragraph1}
+                </p>
+              </FadeIn>
+              <FadeIn delay={200}>
+                <p className="p-7 rounded-2xl bg-[#070e1e]/90 border border-[#1e293b]">
+                  {content.whatIsGuidance?.paragraph2}
+                </p>
               </FadeIn>
             </div>
-            
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              {(content.whyTrustUs.features || []).map((f: any, idx: number) => {
-                const Icon = getIcon(f.icon, TrendingUp);
-                return (
-                  <FadeIn key={idx}>
-                    <div className="bg-white/5 backdrop-blur-xl border border-violet-500/20 p-6 md:p-8 rounded-xl flex gap-5 items-start hover:bg-violet-500/10 hover:border-violet-500/40 transition-all duration-500 group shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
-                      <div className="shrink-0 p-3.5 bg-black/50 rounded-lg border border-violet-500/30 text-violet-400 shadow-inner group-hover:scale-110 transition-transform duration-500">
-                        <Icon className="h-7 w-7 stroke-[1.5]" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-serif text-white mb-2">{f.title}</h3>
-                        <p className="text-stone-300 font-light text-sm leading-relaxed">{f.description}</p>
-                      </div>
-                    </div>
-                  </FadeIn>
-                );
-              })}
-            </div>
 
-          </div>
-        </section>
+            {/* Highlighted Banner Card */}
+            <FadeIn delay={300}>
+              <div className="bg-gradient-to-br from-[#081226] via-[#050b18] to-[#0c1a38] border-2 border-cyan-500/50 rounded-3xl p-9 md:p-14 text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] group">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-[90px] pointer-events-none"></div>
+                
+                <Quote className="h-12 w-12 text-cyan-400 mx-auto mb-5 opacity-80" />
 
-        {/* Quote Banner */}
-        <section className="py-20 relative z-10 bg-purple-950/20 border-y border-violet-500/20 backdrop-blur-md overflow-hidden">
-          <div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[16rem] font-serif text-violet-400 opacity-10 pointer-events-none leading-none select-none transition-transform duration-75"
-            style={{ transform: `translate(-50%, calc(-50% + ${(winScrollY * 0.15) - 150}px))` }}
-          >
-            "
-          </div>
-          <FadeIn>
-            <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-              <Quote className="h-10 w-10 text-violet-400 mx-auto mb-6 opacity-80" />
-              <p className="text-2xl md:text-4xl font-serif text-violet-100 leading-snug drop-shadow-xl">
-                 "{content.whyTrustUs.quote.value}"
-              </p>
-            </div>
-          </FadeIn>
-        </section>
+                <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                  {content.whatIsGuidance?.calloutTitle}
+                </h3>
 
-        {/* Services List */}
-        <section className="py-14 md:py-18 px-6 relative z-10 group/services" id="services">
-          <div className="max-w-5xl mx-auto">
-            <FadeIn>
-              <div className="mb-10 text-center md:text-left">
-                <h2 className="text-2xl md:text-4xl font-serif text-white mb-4 drop-shadow-md">{content.services.heading?.value}</h2>
-                <div className="h-px w-14 bg-violet-400 md:mx-0 mx-auto shadow-[0_0_10px_rgba(139,92,246,0.9)]"></div>
+                <p className="text-slate-100 text-lg md:text-2xl font-normal leading-relaxed max-w-3xl mx-auto mb-7">
+                  {content.whatIsGuidance?.calloutText}
+                </p>
+
+                <div className="inline-block px-7 py-3 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 font-bold text-base md:text-lg tracking-wide">
+                  {content.whatIsGuidance?.calloutFooter}
+                </div>
               </div>
             </FadeIn>
 
-            <div className="space-y-5">
-              {(content.services.cards || []).map((srv: any, idx: number) => {
-                const Icon = getIcon(srv.icon, PenTool);
+          </div>
+        </section>
+
+        {/* 4. WHAT WE HELP YOU WITH */}
+        <section className="py-20 md:py-28 px-6 relative z-10" id="what-we-guide">
+          <div className="max-w-7xl mx-auto">
+            
+            <FadeIn>
+              <div className="text-center max-w-4xl mx-auto mb-16">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                  {content.whatWeGuide?.heading}
+                </h2>
+                <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-6"></div>
+                <p className="text-slate-200 text-lg md:text-xl font-normal">
+                  Comprehensive guidance across every critical section of your research synopsis.
+                </p>
+              </div>
+            </FadeIn>
+
+            {/* 9 Guidance Modules Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+              {content.whatWeGuide?.items?.map((item: ContentItem, idx: number) => {
+                const IconComponent = whatWeGuideIcons[idx % whatWeGuideIcons.length];
                 return (
-                  <FadeIn key={srv.id}>
-                    <div className="bg-white/5 backdrop-blur-xl border border-violet-500/20 rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-6 transition-all duration-500 group-hover/services:opacity-40 hover:!opacity-100 hover:scale-[1.01] hover:bg-violet-500/10 hover:border-violet-500/50 hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
-                      <div className="shrink-0 p-4 bg-black/50 border border-violet-500/30 rounded-lg text-violet-400 group-hover/services:text-violet-400 transition-all shadow-inner">
-                        <Icon className="h-8 w-8 stroke-[1.5]" />
+                  <FadeIn key={idx} delay={idx * 40}>
+                    <div className="bg-[#070e1e]/80 backdrop-blur-xl border border-[#1e293b] hover:border-cyan-500/50 p-7 md:p-8 rounded-2xl hover:bg-[#0c1834] transition-all duration-500 group shadow-lg flex flex-col justify-between h-full">
+                      <div>
+                        <div className="w-14 h-14 rounded-xl bg-[#09152a] border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 group-hover:border-cyan-400 transition-all duration-300 shadow-inner">
+                          <IconComponent className="h-7 w-7 stroke-[1.75]" />
+                        </div>
+                        <h3 className="text-2xl font-extrabold text-white mb-3 group-hover:text-cyan-300 transition-colors [text-wrap:balance]">
+                          {item.title}
+                        </h3>
+                        <p className="text-slate-300 text-base font-normal leading-relaxed">
+                          {item.description}
+                        </p>
                       </div>
-                      <div className="text-center md:text-left">
-                        <h3 className="text-xl font-serif text-white mb-2 drop-shadow-sm">{srv.title}</h3>
-                        <p className="text-stone-300 font-light leading-relaxed text-sm md:text-base max-w-2xl">{srv.desc}</p>
-                      </div>
+                      
+                      {/* Clickable Expert Guidance Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleGuidanceClick(item.title)}
+                        className="pt-5 mt-5 border-t border-[#1e293b] flex items-center gap-2.5 text-sm font-extrabold uppercase text-cyan-400 hover:text-cyan-300 opacity-90 group-hover:opacity-100 transition-all cursor-pointer w-full text-left group/btn"
+                      >
+                        <span>Expert Guidance</span>
+                        <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
                     </div>
                   </FadeIn>
                 );
               })}
             </div>
+
           </div>
         </section>
 
-        {/* Process Timeline */}
-        <section className="py-14 md:py-18 px-6 relative z-10 bg-black/30 backdrop-blur-sm border-y border-white/5" id="process" ref={processRef}>
+        {/* 5. HOW OUR SYNOPSIS GUIDANCE WORKS */}
+        <section className="py-20 md:py-28 px-6 relative z-10 bg-[#02050e] border-y border-[#1e293b]" id="how-it-works" ref={processRef}>
           <div className="max-w-4xl mx-auto">
+            
             <FadeIn>
-              <div className="text-center mb-14">
-                <h2 className="text-2xl md:text-4xl font-serif text-white mb-4 drop-shadow-md">{content.process.heading?.value}</h2>
-                <div className="h-px w-14 bg-violet-400 mx-auto shadow-[0_0_10px_rgba(139,92,246,0.9)]"></div>
+              <div className="text-center max-w-4xl mx-auto mb-16">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                  {content.howItWorks?.heading}
+                </h2>
+                <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)]"></div>
               </div>
             </FadeIn>
 
             <div className="relative ml-4 md:ml-8 py-4 space-y-10">
-              {/* Background empty line */}
-              <div className="absolute left-[1.15rem] top-0 bottom-0 w-1 bg-white/10 rounded-full"></div>
-              {/* Active scroll drawing line */}
+              <div className="absolute left-[1.15rem] top-0 bottom-0 w-1 bg-[#1e293b] rounded-full"></div>
               <div 
-                className="absolute left-[1.15rem] top-0 w-1 bg-violet-400 rounded-full shadow-[0_0_15px_rgba(139,92,246,1)] transition-all duration-300 ease-out"
+                className="absolute left-[1.15rem] top-0 w-1 bg-gradient-to-b from-cyan-400 to-indigo-500 rounded-full shadow-[0_0_15px_rgba(34,211,238,1)] transition-all duration-300 ease-out"
                 style={{ height: `${processProgress}%` }}
               ></div>
 
-              {content.process.steps.map((step: any, idx: number) => {
-                const isActive = processProgress > (idx * 25);
+              {content.howItWorks?.steps?.map((stepItem: ContentItem, idx: number) => {
+                const isActive = processProgress > (idx * 20);
                 return (
-                  <FadeIn key={idx}>
+                  <FadeIn key={idx} delay={idx * 80}>
                     <div className="relative pl-10 md:pl-16 group">
-                      <div className={`absolute -left-1 top-1 h-9 w-9 rounded-full border-[3px] flex items-center justify-center font-serif text-base transition-all duration-500 shadow-lg ${isActive ? 'border-violet-400 bg-purple-950 text-white shadow-[0_0_20px_rgba(139,92,246,0.8)] scale-110' : 'bg-black border-white/20 text-stone-500'}`}>
-                        {step.step}
+                      <div className={`absolute -left-1 top-1 h-10 w-10 rounded-full border-[3px] flex items-center justify-center font-bold text-sm md:text-base transition-all duration-500 shadow-lg ${isActive ? 'border-cyan-400 bg-[#08152e] text-white shadow-[0_0_20px_rgba(34,211,238,0.8)] scale-110' : 'bg-black border-[#1e293b] text-slate-500'}`}>
+                        {idx + 1}
                       </div>
-                      <div className={`bg-white/5 backdrop-blur-md border rounded-xl p-5 md:p-6 transition-all duration-500 ${isActive ? 'border-violet-400/50 shadow-[0_10px_25px_rgba(139,92,246,0.15)]' : 'border-white/10'}`}>
-                        <h3 className={`text-xl font-serif mb-2 transition-colors duration-500 ${isActive ? 'text-violet-100' : 'text-white'}`}>{step.title}</h3>
-                        <p className="text-stone-300 font-light leading-relaxed text-sm md:text-base">{step.desc}</p>
+                      <div className={`bg-[#070e1e]/90 backdrop-blur-md border rounded-2xl p-7 md:p-8 transition-all duration-500 ${isActive ? 'border-cyan-400/50 shadow-[0_10px_25px_rgba(34,211,238,0.15)] bg-[#091630]' : 'border-[#1e293b]'}`}>
+                        <span className="text-xs font-extrabold uppercase tracking-widest text-cyan-400 mb-1.5 block">
+                          {stepItem.step}
+                        </span>
+                        <h3 className={`text-2xl font-extrabold mb-2.5 transition-colors duration-500 ${isActive ? 'text-cyan-200' : 'text-white'}`}>
+                          {stepItem.title}
+                        </h3>
+                        <p className="text-slate-200 font-normal leading-relaxed text-base md:text-lg">
+                          {stepItem.description}
+                        </p>
                       </div>
                     </div>
                   </FadeIn>
                 );
               })}
             </div>
+
           </div>
         </section>
 
-        {/* Scholar Success (Full Width Carousel Section) */}
-        <section className="py-14 md:py-18 relative z-10 w-full overflow-hidden" id="testimonials">
+        {/* 6. WHY CHOOSE WRIRK? */}
+        <section className="py-20 md:py-28 px-6 relative z-10" id="why-choose">
+          <div className="max-w-7xl mx-auto">
+            
+            <FadeIn>
+              <div className="text-center max-w-4xl mx-auto mb-16">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                  {content.whyChoose?.heading}
+                </h2>
+                <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-6"></div>
+              </div>
+            </FadeIn>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+              {content.whyChoose?.reasons?.map((reason: ContentItem, idx: number) => {
+                const IconComponent = whyChooseIcons[idx % whyChooseIcons.length];
+                return (
+                  <FadeIn key={idx} delay={idx * 50}>
+                    <div className="bg-[#070e1e]/80 backdrop-blur-xl border border-[#1e293b] p-7 md:p-9 rounded-2xl hover:bg-[#0c1834] hover:border-cyan-500/50 transition-all duration-500 group shadow-lg">
+                      <div className="w-14 h-14 rounded-xl bg-[#09152a] border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <IconComponent className="h-7 w-7 stroke-[1.75]" />
+                      </div>
+                      <h3 className="text-2xl font-extrabold text-white mb-3 group-hover:text-cyan-300 transition-colors [text-wrap:balance]">
+                        {reason.title}
+                      </h3>
+                      <p className="text-slate-300 text-base font-normal leading-relaxed">
+                        {reason.description}
+                      </p>
+                    </div>
+                  </FadeIn>
+                );
+              })}
+            </div>
+
+          </div>
+        </section>
+
+        {/* 7. WHO CAN BENEFIT? */}
+        <section className="py-20 md:py-28 px-6 relative z-10 bg-[#02050e] border-y border-[#1e293b]" id="who-can-benefit">
+          <div className="max-w-6xl mx-auto text-center">
+            
+            <FadeIn>
+              <div className="max-w-4xl mx-auto mb-12">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                  {content.whoCanBenefit?.heading}
+                </h2>
+                <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-6"></div>
+                <p className="text-slate-200 text-lg md:text-xl font-normal">
+                  {content.whoCanBenefit?.intro}
+                </p>
+              </div>
+            </FadeIn>
+
+            {/* Target Audience Badges */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 mb-14 max-w-4xl mx-auto">
+              {content.whoCanBenefit?.audiences?.map((audience: string, idx: number) => (
+                <FadeIn key={idx} delay={idx * 40}>
+                  <div className="bg-[#070e1e] border border-[#1e293b] hover:border-cyan-400 p-6 rounded-2xl text-center group hover:bg-[#0c1834] transition-all duration-300 shadow-md">
+                    <GraduationCap className="h-8 w-8 text-cyan-400 mx-auto mb-3.5 group-hover:scale-110 transition-transform" />
+                    <span className="text-white font-extrabold text-lg md:text-xl block">
+                      {audience}
+                    </span>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+
+            <FadeIn delay={250}>
+              <div className="max-w-3xl mx-auto p-7 rounded-2xl bg-[#070e1e]/90 border border-[#1e293b]">
+                <p className="text-slate-200 text-lg md:text-xl font-normal leading-relaxed">
+                  {content.whoCanBenefit?.closing}
+                </p>
+              </div>
+            </FadeIn>
+
+          </div>
+        </section>
+
+        {/* 8. YOU WRITE. WE GUIDE. (PHILOSOPHY) */}
+        <section className="py-20 md:py-28 px-6 relative z-10" id="philosophy">
+          <div className="max-w-5xl mx-auto">
+            
+            <FadeIn>
+              <div className="bg-gradient-to-br from-[#060d1c] via-[#09152b] to-[#060d1c] border-2 border-cyan-500/40 rounded-3xl p-9 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative overflow-hidden">
+                
+                <div className="text-center max-w-3xl mx-auto mb-12">
+                  <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-5 tracking-tight leading-tight [text-wrap:balance]">
+                    {content.ourPhilosophy?.heading}
+                  </h2>
+                  <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_12px_rgba(34,211,238,0.9)] mb-6"></div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-cyan-300 [text-wrap:balance]">
+                    {content.ourPhilosophy?.subheading}
+                  </h3>
+                </div>
+
+                <div className="space-y-5 text-slate-200 text-lg md:text-xl font-normal leading-relaxed text-center max-w-3xl mx-auto mb-12">
+                  <p>{content.ourPhilosophy?.body1}</p>
+                  <p className="font-extrabold text-white">{content.ourPhilosophy?.body2}</p>
+                  <p className="text-cyan-400 font-bold">{content.ourPhilosophy?.body3}</p>
+                </div>
+
+                {/* Workflow Flow Pills */}
+                <div className="flex flex-wrap justify-center items-center gap-3.5 mb-12">
+                  {content.ourPhilosophy?.flow?.map((item: string, idx: number) => (
+                    <React.Fragment key={idx}>
+                      <span className="px-5 py-2.5 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 text-sm md:text-base font-extrabold uppercase tracking-wider">
+                        {item}
+                      </span>
+                      {idx < (content.ourPhilosophy?.flow?.length ?? 0) - 1 && (
+                        <ArrowRight className="h-4 w-4 text-cyan-400 opacity-60 hidden sm:inline" />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                {/* Checklist bullets */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5 max-w-2xl mx-auto mb-12">
+                  {content.ourPhilosophy?.bullets?.map((bullet: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3.5 p-4 rounded-xl bg-[#030814] border border-[#1e293b] text-slate-100 text-base md:text-lg font-bold">
+                      <CheckCircle className="h-5 w-5 text-emerald-400 shrink-0" />
+                      <span>{bullet}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="text-center space-y-7">
+                  <p className="text-slate-200 text-lg md:text-xl font-normal">
+                    {content.ourPhilosophy?.body4}
+                  </p>
+                  <div className="inline-block px-9 py-3.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-400 text-cyan-200 font-extrabold text-xl md:text-2xl tracking-wide shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+                    {content.ourPhilosophy?.tagline}
+                  </div>
+                </div>
+
+              </div>
+            </FadeIn>
+
+          </div>
+        </section>
+
+        {/* 9. TESTIMONIALS */}
+        <section className="py-20 md:py-28 relative z-10 w-full overflow-hidden bg-[#02050e] border-y border-[#1e293b]" id="testimonials">
           <div className="w-full">
             <FadeIn>
-              <div className="text-center mb-10 px-6">
-                 <h2 className="text-2xl md:text-4xl font-serif text-white mb-4 drop-shadow-md">Scholar Success</h2>
-                 <div className="h-px w-14 bg-violet-400 mx-auto shadow-[0_0_10px_rgba(139,92,246,0.9)]"></div>
+              <div className="text-center mb-12 px-6">
+                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                   {content.testimonialsSection?.heading || "Testimonials"}
+                 </h2>
+                 <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-5"></div>
+                 <p className="text-slate-200 text-lg md:text-xl font-normal">
+                   {content.testimonialsSection?.subtext || "What Scholars Say About Our Guidance"}
+                 </p>
               </div>
             </FadeIn>
             <div className="w-full relative mt-4">
@@ -422,81 +792,93 @@ export default function ClientPage({ initialContent }: { initialContent: any }) 
           </div>
         </section>
 
-        {/* FAQs */}
-        <section className="py-14 md:py-18 px-6 relative z-10 bg-black/30 backdrop-blur-sm border-t border-white/5" id="faqs">
-          <div className="max-w-3xl mx-auto">
+        {/* 10. FAQS */}
+        <section className="py-20 md:py-28 px-6 relative z-10" id="faqs">
+          <div className="max-w-4xl mx-auto">
+            
             <FadeIn>
-              <div className="text-center mb-12">
-                <h2 className="text-2xl md:text-4xl font-serif text-white mb-4 drop-shadow-md">{content.faqs.heading?.value}</h2>
-                <div className="h-px w-14 bg-violet-400 mx-auto shadow-[0_0_10px_rgba(139,92,246,0.9)]"></div>
+              <div className="text-center mb-16">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
+                  {content.faqs?.heading || "FAQs"}
+                </h2>
+                <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)]"></div>
               </div>
             </FadeIn>
 
-            <div className="divide-y divide-white/10 border-y border-white/10">
-              {content.faqs.items.map((faq: any, i: number) => (
-                <FadeIn key={i}>
-                  <div className="py-4">
+            <div className="divide-y divide-[#1e293b] border-y border-[#1e293b]">
+              {content.faqs?.items?.map((faq: ContentItem, i: number) => (
+                <FadeIn key={i} delay={i * 20}>
+                  <div className="py-6">
                     <button 
-                      className="w-full flex items-center justify-between text-left focus:outline-none group py-2"
+                      className="w-full flex items-center justify-between text-left focus:outline-none group py-2 cursor-pointer"
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     >
-                      <span className={`font-serif text-base md:text-lg transition-colors ${openFaq === i ? 'text-violet-400' : 'text-white group-hover:text-violet-200'}`}>{faq.q}</span>
-                      <div className={`shrink-0 flex items-center justify-center h-7 w-7 rounded-full border transition-all duration-300 ${openFaq === i ? 'border-violet-400 bg-violet-500/20' : 'border-white/10 bg-white/5 group-hover:border-violet-400/50'}`}>
-                        <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${openFaq === i ? 'rotate-180 text-violet-400' : 'text-stone-400'}`} />
+                      <span className={`font-extrabold text-lg md:text-xl pr-4 transition-colors ${openFaq === i ? 'text-cyan-400' : 'text-white group-hover:text-cyan-300'}`}>
+                        {faq.q}
+                      </span>
+                      <div className={`shrink-0 flex items-center justify-center h-9 w-9 rounded-full border transition-all duration-300 ${openFaq === i ? 'border-cyan-400 bg-cyan-500/20 text-cyan-400' : 'border-[#1e293b] bg-[#070e1e] text-slate-400 group-hover:border-cyan-400/50'}`}>
+                        <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
                       </div>
                     </button>
                     <div className={`overflow-hidden transition-all duration-500 ease-in-out ${openFaq === i ? 'max-h-96 mt-4 opacity-100 blur-none' : 'max-h-0 opacity-0 blur-sm'}`}>
-                      <p className="text-stone-300 font-light leading-relaxed text-sm md:text-base pl-2 border-l-2 border-violet-400/50 pb-2">{faq.a}</p>
+                      <p className="text-slate-200 font-normal leading-relaxed text-base md:text-lg pl-4 border-l-2 border-cyan-400/50 py-1">
+                        {faq.a}
+                      </p>
                     </div>
                   </div>
                 </FadeIn>
               ))}
             </div>
+
           </div>
         </section>
 
-        {/* Final Bottom CTA Banner with Live Form */}
-        <section className="py-16 md:py-20 px-6 relative z-10 overflow-hidden" id="final-cta">
+        {/* 11. FINAL CTA */}
+        <section className="pt-20 pb-40 md:pt-28 md:pb-64 px-6 relative z-10 overflow-hidden" id="final-cta">
           <FadeIn>
-            <div className="max-w-6xl mx-auto bg-gradient-to-r from-[#07050f] via-[#160f29] to-[#07050f] border border-violet-500/40 rounded-3xl p-8 md:p-12 relative shadow-[0_25px_70px_rgba(0,0,0,0.85)] overflow-hidden group">
+            <div id="final-cta-card-box" className="max-w-6xl mx-auto bg-gradient-to-r from-[#060c19] via-[#0f192e] to-[#060c19] border-2 border-cyan-500/40 rounded-3xl p-9 md:p-14 relative shadow-[0_25px_70px_rgba(0,0,0,0.85)] overflow-hidden">
               
-              {/* Ambient lighting */}
-              <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/20 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-700/15 rounded-full blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/3"></div>
-
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
                 
-                {/* Left Side: Headline & Copy */}
+                {/* Left Side */}
                 <div className="lg:col-span-6 space-y-6 text-left">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold uppercase tracking-widest backdrop-blur-md">
-                    <Sparkles className="h-3.5 w-3.5 text-violet-400" /> Start Your Synopsis
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-extrabold uppercase tracking-widest backdrop-blur-md">
+                    <Sparkles className="h-3.5 w-3.5 text-cyan-400" /> Synopsis Research Mentorship
                   </div>
 
-                  <h2 className="text-3xl md:text-5xl font-serif text-white leading-tight drop-shadow-md">
-                    Get Expert Guidance to Build a Strong Research Synopsis
+                  <h2 className="text-4xl md:text-6xl font-extrabold text-white leading-tight tracking-tight [text-wrap:balance]">
+                    {content.finalCTA?.heading}
                   </h2>
 
-                  <p className="text-stone-300 font-light text-base md:text-lg leading-relaxed">
-                    Connect with our research mentors today for 1-on-1 personalized guidance on topic selection, research objectives, and methodology framework.
+                  <p className="text-slate-200 font-normal text-lg md:text-xl leading-relaxed">
+                    {content.finalCTA?.subtext}
                   </p>
 
-                  <div className="pt-2 flex flex-col gap-3">
-                    <div className="flex items-center gap-3 text-stone-200 text-sm font-medium">
-                      <CheckCircle className="h-4 w-4 text-violet-400 shrink-0" />
-                      <span>University & Committee Approved Structure</span>
+                  <div className="p-5 rounded-xl bg-[#081226] border border-cyan-500/30 font-bold text-cyan-300 text-xl md:text-2xl">
+                    {content.finalCTA?.tagline}
+                  </div>
+
+                  <div className="pt-2 flex flex-col gap-3.5">
+                    <div className="flex items-center gap-3.5 text-slate-100 text-base md:text-lg font-semibold">
+                      <CheckCircle className="h-5 w-5 text-cyan-400 shrink-0" />
+                      <span>Individualized Research Proposal Guidance</span>
                     </div>
-                    <div className="flex items-center gap-3 text-stone-200 text-sm font-medium">
-                      <CheckCircle className="h-4 w-4 text-violet-400 shrink-0" />
-                      <span>100% Confidential & Authentic Guidance</span>
+                    <div className="flex items-center gap-3.5 text-slate-100 text-base md:text-lg font-semibold">
+                      <CheckCircle className="h-5 w-5 text-cyan-400 shrink-0" />
+                      <span>100% Confidential &amp; Ethical Mentorship</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Right Side: Embedded Live Contact Form */}
-                <div className="lg:col-span-6">
-                  <div className="bg-black/60 backdrop-blur-xl border border-violet-500/30 rounded-2xl p-6 md:p-8 shadow-2xl relative">
-                    <h3 className="text-xl font-serif text-white mb-6 text-center border-b border-white/10 pb-3">Request Synopsis Review</h3>
-                    <SharedForm formId="bottom-cta" buttonText="Request Confidential Review" />
+                {/* Right Side Form */}
+                <div className="lg:col-span-6" id="bottom-cta-card">
+                  <div className="bg-[#030712]/90 backdrop-blur-xl border border-[#1e293b] rounded-2xl p-7 md:p-9 shadow-2xl relative">
+                    <h3 className="text-2xl font-extrabold text-white mb-6 text-center border-b border-white/10 pb-4">Get Synopsis Guidance</h3>
+                    <SharedForm 
+                      formId="bottom-cta" 
+                      buttonText={content.finalCTA?.ctaText || "Get Synopsis Guidance"} 
+                      initialMessage={selectedModuleMessage}
+                    />
                   </div>
                 </div>
 
@@ -509,34 +891,60 @@ export default function ClientPage({ initialContent }: { initialContent: any }) 
       </div> {/* End Main Content Wrapper */}
 
       {/* Footer */}
-      <footer ref={footerRef} className="fixed bottom-0 w-full z-0 bg-black pt-16 pb-10">
+      <footer ref={footerRef} className="fixed bottom-0 w-full z-0 bg-[#02040a] pt-16 pb-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <span className="font-serif text-[24px] tracking-widest text-white uppercase">WRIRK</span>
+                <Image priority={true} src="/WrirkLogoOld.png" alt="WRIRK Logo" width={44} height={44} className="h-11 w-11 object-contain" />
+                <span className="font-serif text-[26px] tracking-widest text-white uppercase">WRIRK</span>
               </div>
-              <p className="text-stone-400 font-light max-w-sm leading-relaxed text-sm mb-4">
-                {content.footer?.description.map((p: any) => p.value).join(' ')}
+              <p className="text-slate-400 font-normal max-w-sm leading-relaxed text-base mb-4">
+                {content.footer?.description?.map((p: { value: string }) => p.value).join(' ')}
               </p>
-              <a href="mailto:contact@wrirk.com" className="text-violet-400 hover:text-violet-300 text-sm transition-colors">contact@wrirk.com</a>
+              <a href="mailto:contact@wrirk.com" className="text-cyan-400 hover:text-cyan-300 text-base font-semibold transition-colors">contact@wrirk.com</a>
             </div>
             <div className="flex flex-col md:items-end justify-center">
-               <h3 className="text-white font-serif text-lg mb-3">Connect With Us</h3>
-               <div className="flex gap-5 text-sm">
-                 <a href={content.footer?.socials?.whatsapp} className="text-stone-400 hover:text-violet-400 transition-colors">WhatsApp</a>
-                 <a href={content.footer?.socials?.linkedin} className="text-stone-400 hover:text-violet-400 transition-colors">LinkedIn</a>
-                 <a href={content.footer?.socials?.youtube} className="text-stone-400 hover:text-violet-400 transition-colors">YouTube</a>
+               <h3 className="text-white font-bold text-xl mb-3">Connect With Us</h3>
+               <div className="flex gap-6 text-base font-semibold">
+                 <a href={content.footer?.socials?.whatsapp} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-400 transition-colors">WhatsApp</a>
+                 <a href={content.footer?.socials?.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-400 transition-colors">LinkedIn</a>
+                 <a href={content.footer?.socials?.youtube} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-400 transition-colors">YouTube</a>
                </div>
             </div>
           </div>
-          <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-stone-500 text-xs font-light">
+          <div className="border-t border-[#1e293b] pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs md:text-sm font-normal">
             <p>© 2026 MPRW Research Work LLP. All rights Reserved.</p>
-            <p className="tracking-[0.2em] font-semibold">INDIA <span className="text-red-800 ml-1">❤️</span></p>
+            <p className="tracking-widest font-extrabold">INDIA <span className="text-red-800 ml-1">❤️</span></p>
           </div>
         </div>
       </footer>
       
+      {/* Floating Quick Action Buttons */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3.5">
+        <a 
+          href={content.footer?.socials?.whatsapp || "https://chat.whatsapp.com/IUUfrrGfyBNH6exy1JzOEA"} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          aria-label="WhatsApp Us"
+          className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#128C7E] to-[#25D366] border border-emerald-300/40 text-white flex items-center justify-center shadow-[0_0_25px_rgba(37,211,102,0.6)] hover:shadow-[0_0_35px_rgba(37,211,102,0.9)] hover:scale-110 transition-all duration-300 group"
+        >
+          <svg className="w-7 h-7 fill-white group-hover:rotate-12 transition-transform duration-300" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+        </a>
+
+        <a 
+          href={`tel:${content.globalSettings?.callNumber?.value || "+919548521859"}`}
+          aria-label="Call Us"
+          className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#0284C7] to-[#38BDF8] border border-cyan-300/40 text-white flex items-center justify-center shadow-[0_0_25px_rgba(56,189,248,0.6)] hover:shadow-[0_0_35px_rgba(56,189,248,0.9)] hover:scale-110 transition-all duration-300 group"
+        >
+          <svg className="w-6.5 h-6.5 fill-white group-hover:rotate-12 transition-transform duration-300" viewBox="0 0 24 24">
+            <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+          </svg>
+        </a>
+      </div>
+
       <PopupForm />
     </main>
   );
