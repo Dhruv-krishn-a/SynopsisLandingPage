@@ -79,9 +79,11 @@ interface SiteContent {
     calloutTitle?: string;
     calloutText?: string;
     calloutFooter?: string;
+    pillars?: ContentItem[];
   };
   whatWeGuide?: {
     heading?: string;
+    intro?: string;
     items?: ContentItem[];
   };
   howItWorks?: {
@@ -505,12 +507,41 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
                   {content.whatIsGuidance?.paragraph1}
                 </p>
               </FadeIn>
-              <FadeIn delay={200}>
-                <p className="p-7 rounded-2xl bg-[#070e1e]/90 border border-[#1e293b]">
-                  {content.whatIsGuidance?.paragraph2}
-                </p>
-              </FadeIn>
+              {content.whatIsGuidance?.paragraph2 && (
+                <FadeIn delay={200}>
+                  <p className="p-7 rounded-2xl bg-[#070e1e]/90 border border-[#1e293b]">
+                    {content.whatIsGuidance.paragraph2}
+                  </p>
+                </FadeIn>
+              )}
             </div>
+
+            {/* 5 Guidance Pillars */}
+            {content.whatIsGuidance?.pillars && (
+              <div className="flex flex-wrap justify-center gap-6 mb-14">
+                {content.whatIsGuidance.pillars.map((pillar, idx) => (
+                  <FadeIn 
+                    key={idx} 
+                    delay={idx * 50}
+                    className="w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-sm flex"
+                  >
+                    <div className="bg-[#070e1e]/80 backdrop-blur-xl border border-[#1e293b] hover:border-cyan-500/50 p-6 sm:p-7 rounded-2xl flex flex-col justify-between w-full h-full shadow-md group hover:bg-[#0c1834] transition-all duration-300">
+                      <div>
+                        <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-extrabold text-sm mb-4 group-hover:scale-110 transition-transform">
+                          0{pillar.step || idx + 1}
+                        </div>
+                        <h3 className="text-xl font-extrabold text-white mb-2.5 group-hover:text-cyan-300 transition-colors">
+                          {pillar.title}
+                        </h3>
+                        <p className="text-slate-300 text-sm font-normal leading-relaxed">
+                          {pillar.description}
+                        </p>
+                      </div>
+                    </div>
+                  </FadeIn>
+                ))}
+              </div>
+            )}
 
             {/* Highlighted Banner Card */}
             <FadeIn delay={300}>
@@ -547,12 +578,12 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
                 </h2>
                 <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-6"></div>
                 <p className="text-slate-200 text-lg md:text-xl font-normal">
-                  Comprehensive guidance across every critical section of your research synopsis.
+                  {content.whatWeGuide?.intro || "Comprehensive guidance across every critical section of your research synopsis."}
                 </p>
               </div>
             </FadeIn>
 
-            {/* 9 Guidance Modules Grid */}
+            {/* 6 Guidance Modules Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
               {content.whatWeGuide?.items?.map((item: ContentItem, idx: number) => {
                 const IconComponent = whatWeGuideIcons[idx % whatWeGuideIcons.length];
@@ -610,7 +641,7 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
               ></div>
 
               {content.howItWorks?.steps?.map((stepItem: ContentItem, idx: number) => {
-                const isActive = processProgress > (idx * 20);
+                const isActive = processProgress > (idx * 25);
                 return (
                   <FadeIn key={idx} delay={idx * 80}>
                     <div className="relative pl-10 md:pl-16 group">
