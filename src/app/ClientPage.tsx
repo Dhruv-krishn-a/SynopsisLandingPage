@@ -80,6 +80,7 @@ interface SiteContent {
     calloutText?: string;
     calloutFooter?: string;
     pillars?: ContentItem[];
+    outro?: string;
   };
   whatWeGuide?: {
     heading?: string;
@@ -346,14 +347,6 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
                 {content.hero?.description?.[0]?.value || "Get personalized, one-on-one guidance from research experts and learn how to develop your synopsis with greater clarity and confidence."}
               </p>
 
-              <div className="bg-[#081226]/90 border-l-4 border-cyan-400 rounded-xl p-6 md:p-7 border-t border-r border-b border-cyan-500/20 shadow-xl backdrop-blur-md space-y-3">
-                <p className="text-cyan-400 font-bold text-lg md:text-xl">
-                  {content.hero?.integrityBold?.value || "You write. We guide."}
-                </p>
-                <p className="text-slate-300 text-sm md:text-base font-normal leading-relaxed">
-                  We provide expert mentorship, synopsis guidance, research framework support, and academic review—helping you submit with confidence while maintaining the highest standards of academic integrity.
-                </p>
-              </div>
 
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <button 
@@ -398,51 +391,6 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
           </div>
         </section>
 
-        {/* Metrics Bar */}
-        <section className="py-8 md:py-12 px-4 sm:px-6 relative z-10">
-          <FadeIn>
-            <div className="max-w-7xl mx-auto relative z-10 py-10 md:py-12 border border-white/40 bg-white/95 backdrop-blur-xl shadow-[0_0_50px_rgba(255,255,255,0.15)] rounded-3xl lg:rounded-[2.5rem] px-6 md:px-12">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 items-center">
-                 {content.metrics?.map((metric: ContentItem, i: number) => {
-                    const cleanValue = (metric.value || '').replace(/,/g, '');
-                    const numMatch = cleanValue.match(/\d+/);
-                    const num = numMatch ? parseInt(numMatch[0]) : null;
-                    const suffix = (metric.value || '').replace(/[\d,]+/, '').trim();
-                    
-                    return (
-                      <div 
-                        key={i} 
-                        className={`flex items-center gap-4 sm:gap-5 px-3 sm:px-4 lg:px-6 py-2 justify-start ${
-                          content.metrics && i < content.metrics.length - 1 ? 'lg:border-r border-slate-300' : ''
-                        }`}
-                      >
-                         {metric.icon === 'Clock' && <Clock className="w-9 h-9 sm:w-10 sm:h-10 text-slate-950 shrink-0 stroke-[2.2]" />}
-                         {metric.icon === 'Users' && <Users className="w-9 h-9 sm:w-10 sm:h-10 text-slate-950 shrink-0 stroke-[2.2]" />}
-                         {(metric.icon === 'FileCheck2' || metric.icon === 'FileText') && <FileText className="w-9 h-9 sm:w-10 sm:h-10 text-slate-950 shrink-0 stroke-[2.2]" />}
-                         {metric.icon === 'ShieldCheck' && <ShieldCheck className="w-9 h-9 sm:w-10 sm:h-10 text-slate-950 shrink-0 stroke-[2.2]" />}
-                         
-                         <div className="flex flex-col justify-center text-left">
-                           {num !== null ? (
-                             <span className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-none">
-                               <AnimatedCounter end={num} suffix={suffix} duration={2000} />
-                             </span>
-                           ) : (
-                             <span className="text-xl sm:text-2xl font-extrabold text-slate-950 leading-tight tracking-tight">
-                               Confidential &amp; <br className="hidden sm:inline" />Ethical
-                             </span>
-                           )}
-
-                           <div className="text-xs sm:text-[13px] font-bold text-[#1e293b] tracking-wider uppercase mt-1.5 leading-tight">
-                             {metric.label}
-                           </div>
-                         </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          </FadeIn>
-        </section>
 
         {/* 2. STRUGGLING TO STRUCTURE YOUR RESEARCH SYNOPSIS? */}
         <section className="py-20 md:py-28 px-6 relative z-10" id="struggling">
@@ -460,30 +408,30 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
               </div>
             </FadeIn>
 
-            {/* 8 Challenge Points Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 mb-12">
+            <div className="space-y-4">
               {content.strugglingSection?.points?.map((point: string, idx: number) => (
-                <FadeIn key={idx} delay={idx * 30}>
-                  <div className="bg-[#070e1e]/80 backdrop-blur-xl border border-[#1e293b] hover:border-cyan-500/50 p-5 md:p-6 rounded-xl flex items-start gap-4 hover:bg-[#0a152d] transition-all duration-300 group shadow-md">
-                    <div className="shrink-0 p-2.5 rounded-lg bg-cyan-950/80 text-cyan-400 border border-cyan-500/30 group-hover:scale-110 transition-transform">
-                      <HelpCircle className="h-6 w-6" />
+                <FadeIn key={idx} delay={idx * 50}>
+                  <div className="flex items-center gap-4 bg-[#070e1e]/80 border border-[#1e293b] p-5 rounded-2xl shadow-sm hover:border-cyan-500/30 transition-colors">
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-cyan-950/50 flex items-center justify-center text-cyan-400 border border-cyan-500/30">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                     </div>
-                    <span className="text-slate-200 text-base md:text-lg font-medium leading-snug pt-0.5">
+                    <p className="text-slate-200 text-lg md:text-xl font-normal leading-relaxed">
                       {point}
-                    </span>
+                    </p>
                   </div>
                 </FadeIn>
               ))}
             </div>
 
-            {/* Section Conclusion */}
-            <FadeIn delay={300}>
-              <div className="bg-gradient-to-r from-[#081226] via-[#0c1a38] to-[#081226] border border-cyan-500/40 rounded-2xl p-7 md:p-9 text-center shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <p className="text-cyan-200 text-xl md:text-2xl font-bold leading-relaxed whitespace-pre-line">
-                  &quot;{content.strugglingSection?.conclusion}&quot;
-                </p>
-              </div>
-            </FadeIn>
+            {content.strugglingSection?.conclusion && (
+              <FadeIn delay={300}>
+                <div className="mt-12 text-center">
+                  <p className="text-cyan-200 text-xl md:text-2xl font-medium [text-wrap:balance]">
+                    {content.strugglingSection.conclusion}
+                  </p>
+                </div>
+              </FadeIn>
+            )}
 
           </div>
         </section>
@@ -543,24 +491,36 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
               </div>
             )}
 
-            {/* Highlighted Banner Card */}
-            <FadeIn delay={300}>
-              <div className="bg-gradient-to-br from-[#081226] via-[#050b18] to-[#0c1a38] border-2 border-cyan-500/50 rounded-3xl p-9 md:p-14 text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] group">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-[90px] pointer-events-none"></div>
-                
-                <Quote className="h-12 w-12 text-cyan-400 mx-auto mb-5 opacity-80" />
-
-                <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-5 tracking-tight [text-wrap:balance]">
-                  {content.whatIsGuidance?.calloutTitle}
-                </h3>
-
-                <p className="text-slate-100 text-lg md:text-2xl font-normal leading-relaxed max-w-3xl mx-auto mb-7">
-                  {content.whatIsGuidance?.calloutText}
-                </p>
-
-                <div className="inline-block px-7 py-3 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 font-bold text-base md:text-lg tracking-wide">
-                  {content.whatIsGuidance?.calloutFooter}
+            {/* Highlight Typography Block */}
+            <FadeIn delay={200}>
+              {content.whatIsGuidance?.outro && (
+                <div className="text-center mt-12 mb-10">
+                  <p className="text-slate-200 text-xl md:text-2xl font-medium">
+                    {content.whatIsGuidance.outro}
+                  </p>
                 </div>
+              )}
+              
+              <div className="max-w-4xl mx-auto mb-10 p-8 md:p-12 bg-gradient-to-br from-[#0a152e] to-[#040a17] border border-cyan-500/20 rounded-3xl text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent pointer-events-none"></div>
+                
+                {content.whatIsGuidance?.calloutTitle && (
+                  <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-6 tracking-tight relative z-10 [text-wrap:balance]">
+                    {content.whatIsGuidance.calloutTitle}
+                  </h3>
+                )}
+                
+                {content.whatIsGuidance?.calloutText && (
+                  <p className="text-cyan-100/80 text-lg md:text-xl font-normal leading-relaxed mb-8 max-w-3xl mx-auto relative z-10">
+                    {content.whatIsGuidance.calloutText}
+                  </p>
+                )}
+                
+                {content.whatIsGuidance?.calloutFooter && (
+                  <div className="inline-block px-8 py-3 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 font-bold text-lg tracking-wide relative z-10 shadow-[0_0_20px_rgba(34,211,238,0.1)]">
+                    {content.whatIsGuidance.calloutFooter}
+                  </div>
+                )}
               </div>
             </FadeIn>
 
@@ -577,9 +537,11 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
                   {content.whatWeGuide?.heading}
                 </h2>
                 <div className="h-px w-24 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto shadow-[0_0_10px_rgba(34,211,238,0.9)] mb-6"></div>
-                <p className="text-slate-200 text-lg md:text-xl font-normal">
-                  {content.whatWeGuide?.intro || "Comprehensive guidance across every critical section of your research synopsis."}
-                </p>
+                {content.whatWeGuide?.intro && (
+                  <p className="text-slate-200 text-lg md:text-xl font-normal">
+                    {content.whatWeGuide.intro}
+                  </p>
+                )}
               </div>
             </FadeIn>
 
@@ -602,15 +564,7 @@ export default function ClientPage({ initialContent }: { initialContent: SiteCon
                         </p>
                       </div>
                       
-                      {/* Clickable Expert Guidance Button */}
-                      <button
-                        type="button"
-                        onClick={() => handleGuidanceClick(item.title)}
-                        className="pt-5 mt-5 border-t border-[#1e293b] flex items-center gap-2.5 text-sm font-extrabold uppercase text-cyan-400 hover:text-cyan-300 opacity-90 group-hover:opacity-100 transition-all cursor-pointer w-full text-left group/btn"
-                      >
-                        <span>Expert Guidance</span>
-                        <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </button>
+                      
                     </div>
                   </FadeIn>
                 );
